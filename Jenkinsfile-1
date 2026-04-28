@@ -1,0 +1,43 @@
+pipeline
+{
+    agent any 
+    stages
+    {
+        stage('Downlod')
+        {
+            steps
+            {
+                git 'https://github.com/kavali5096-pixel/maven.git'
+            }
+        }
+        stage('Bulid')
+        {
+            steps
+            {
+            sh 'mvn package'
+        }
+    }
+    stage('Devlopment')
+    {
+        steps
+        {
+            deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: '9d3c7be9-6fa8-442b-8168-ab2601e94b90', path: '', url: 'http://18.234.179.86:8080')], contextPath: 'test', war: '**/*.war'
+        }
+    }
+    stage('testing')
+    {
+        steps
+        {
+            git 'https://github.com/kavali5096-pixel/testing.git'
+            sh 'java -jar /var/lib/jenkins/workspace/Declareativepipeline/testing.jar'
+        }
+    }
+    stage('Delviery')
+    {
+        steps
+        {
+            deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: '9d3c7be9-6fa8-442b-8168-ab2601e94b90', path: '', url: 'http://172.31.44.40:8080')], contextPath: 'prodapp', war: '**/*.war'
+        }
+    }
+    }
+}
